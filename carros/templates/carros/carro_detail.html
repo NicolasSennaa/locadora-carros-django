@@ -1,0 +1,58 @@
+{% extends "carros/base.html" %}
+
+{% block title %}Detalhes do Carro: {{ carro.modelo }}{% endblock %}
+{% block header_text %}Detalhes do Carro{% endblock %}
+
+{% block content %}
+    <h2>{{ carro.marca }} {{ carro.modelo }}</h2>
+    
+    <div style="border: 1px solid #ccc; padding: 20px; border-radius: 5px;">
+        <p><strong>Placa:</strong> {{ carro.placa }}</p>
+        <p><strong>Ano:</strong> {{ carro.ano }}</p>
+        <p><strong>Valor da Diária:</strong> R$ {{ carro.valor_diaria|floatformat:2 }}</p>
+        <p>
+            <strong>Disponibilidade:</strong> 
+            {% if carro.disponivel %}
+                <span style="color: green; font-weight: bold;">DISPONÍVEL</span>
+            {% else %}
+                <span style="color: red;">ALUGADO</span>
+            {% endif %}
+        </p>
+    </div>
+
+    <h3 style="margin-top: 30px;">Últimos Aluguéis</h3>
+    
+    {% if ultimos_alugueis %}
+    <table>
+        <thead>
+            <tr>
+                <th>Cliente</th>
+                <th>Início</th>
+                <th>Fim Previsto</th>
+                <th>Devolução Real</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for aluguel in ultimos_alugueis %}
+            <tr>
+                <td>{{ aluguel.cliente.nome }}</td>
+                <td>{{ aluguel.data_inicio|date:"d/m/Y" }}</td>
+                <td>{{ aluguel.data_fim|date:"d/m/Y" }}</td>
+                <td>
+                    {% if aluguel.data_devolucao %}
+                        {{ aluguel.data_devolucao|date:"d/m/Y" }}
+                    {% else %}
+                        Em Aberto
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+        <p>Este carro ainda não possui registros de aluguel.</p>
+    {% endif %}
+
+    <a href="{% url 'carros:lista_carros' %}" class="button" style="background-color: #6c757d;">Voltar para Carros</a>
+
+{% endblock %}

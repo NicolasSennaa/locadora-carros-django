@@ -1,0 +1,31 @@
+{% extends "carros/base.html" %}
+
+{% block title %}Página Inicial - Locadora Super{% endblock %}
+{% block header_text %}Bem-vindo(a) ao Sistema{% endblock %}
+
+{% block content %}
+    <h2>Visão Geral do Sistema</h2>
+    <p>Este é o painel principal de gestão da sua locadora de veículos. Utilize os links de navegação acima para acessar as diferentes seções do sistema.</p>
+    
+    <div style="display: flex; justify-content: space-around; margin-top: 40px;">
+        <div style="background-color: #e6f0ff; padding: 20px; border-radius: 5px; text-align: center; width: 30%;">
+            <h3>Frota</h3>
+            <p>Gerencie todos os veículos disponíveis e alugados.</p>
+            <a href="{% url 'carros:lista_carros' %}" class="button">Ver Carros</a>
+        </div>
+
+        <div style="background-color: #e6f0ff; padding: 20px; border-radius: 5px; text-align: center; width: 30%;">
+            <h3>Clientes</h3>
+            <p>Visualize e cadastre informações dos seus clientes.</p>
+            <a href="{% url 'carros:lista_clientes' %}" class="button">Ver Clientes</a>
+        </div>
+        
+        <div style="background-color: #e6f0ff; padding: 20px; border-radius: 5px; text-align: center; width: 30%;">
+            <h3>Aluguéis</h3>
+            <p>Acompanhe os registros de aluguéis ativos e finalizados.</p>
+            <a href="{% url 'carros:lista_alugueis' %}" class="button">Ver Aluguéis</a>
+        </div>
+    </div>
+
+    <p style="margin-top: 40px; text-align: center; font-style: italic;">Lembre-se de adicionar dados de teste no painel de administração (`/admin/`) antes de visualizar as listas.</p>
+{% endblock %}

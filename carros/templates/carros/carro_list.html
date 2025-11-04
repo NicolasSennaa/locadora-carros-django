@@ -1,0 +1,48 @@
+{% extends "carros/base.html" %}
+
+{% block title %}Lista de Carros{% endblock %}
+{% block header_text %}Frota de Veículos{% endblock %}
+
+{% block content %}
+    <h2>Lista de Carros</h2>
+    
+    {% if carros %}
+    <table>
+        <thead>
+            <tr>
+                <th>Placa</th>
+                <th>Marca</th>
+                <th>Modelo</th>
+                <th>Ano</th>
+                <th>Diária (R$)</th>
+                <th>Status</th>
+                <th>Ações</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for carro in carros %}
+            <tr>
+                <td>{{ carro.placa }}</td>
+                <td>{{ carro.marca }}</td>
+                <td>{{ carro.modelo }}</td>
+                <td>{{ carro.ano }}</td>
+                <td>R$ {{ carro.valor_diaria|floatformat:2 }}</td>
+                <td>
+                    {% if carro.disponivel %}
+                        <span style="color: green; font-weight: bold;">DISPONÍVEL</span>
+                    {% else %}
+                        <span style="color: red;">ALUGADO</span>
+                    {% endif %}
+                </td>
+                <td>
+                    <a href="{% url 'carros:detalhe_carro' pk=carro.pk %}" class="button" style="background-color: #1a73e8;">Ver Detalhes</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+        <p>Nenhum carro cadastrado. Adicione carros no painel de administração.</p>
+    {% endif %}
+
+{% endblock %}

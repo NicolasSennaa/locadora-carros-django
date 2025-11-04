@@ -1,0 +1,46 @@
+{% extends "carros/base.html" %}
+
+{% block title %}Lista de Aluguéis{% endblock %}
+{% block header_text %}Histórico de Aluguéis{% endblock %}
+
+{% block content %}
+    <h2>Lista de Aluguéis</h2>
+    
+    {% if alugueis %}
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Carro</th>
+                <th>Cliente</th>
+                <th>Início</th>
+                <th>Fim Previsto</th>
+                <th>Status</th>
+                <th>Valor Total</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for aluguel in alugueis %}
+            <tr>
+                <td>{{ aluguel.id }}</td>
+                <td><a href="{% url 'carros:detalhe_carro' pk=aluguel.carro.pk %}">{{ aluguel.carro }}</a></td>
+                <td>{{ aluguel.cliente.nome }}</td>
+                <td>{{ aluguel.data_inicio|date:"d/m/Y" }}</td>
+                <td>{{ aluguel.data_fim|date:"d/m/Y" }}</td>
+                <td>
+                    {% if aluguel.data_devolucao %}
+                        <span style="color: gray;">FINALIZADO</span>
+                    {% else %}
+                        <span style="color: blue; font-weight: bold;">EM ANDAMENTO</span>
+                    {% endif %}
+                </td>
+                <td>R$ {{ aluguel.valor_total|floatformat:2|default:"A Calcular" }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+        <p>Nenhum aluguel registrado ainda.</p>
+    {% endif %}
+
+{% endblock %}
