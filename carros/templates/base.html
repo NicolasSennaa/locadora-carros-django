@@ -1,0 +1,121 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Locadora de Carros Django{% endblock %}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f4f7f9;
+        }
+        .field-wrapper input {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        .button {
+            display: inline-block;
+            padding: 8px 15px;
+            margin-top: 10px;
+            border-radius: 5px;
+            color: white !important;
+            text-decoration: none;
+            font-weight: 600;
+            transition: background-color 0.15s ease;
+            background-color: #3b82f6; 
+        }
+        .button:hover {
+            background-color: #2563eb;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            background-color: white;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        th {
+            background-color: #f3f4f6;
+            color: #1f2937;
+            font-weight: 700;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+        }
+        tr:hover {
+            background-color: #f9fafb;
+        }
+    </style>
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+</head>
+<body class="min-h-screen flex flex-col">
+
+    <nav class="bg-gray-800 shadow-xl">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center">
+                    <a href="{% url 'home' %}" class="flex-shrink-0 text-white text-xl font-bold">
+                        <i class="fa-solid fa-car-side text-red-500 mr-2"></i> Locadora
+                    </a>
+                    <div class="hidden md:block">
+                        <div class="ml-10 flex items-baseline space-x-4">
+                            <a href="{% url 'home' %}" class="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Início</a>
+                            <a href="{% url 'carros:carro_list' %}" class="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Carros</a>
+                            <a href="{% url 'carros:cliente_list' %}" class="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Clientes</a>
+                            <a href="{% url 'carros:aluguel_list' %}" class="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Aluguéis</a>
+                            <a href="{% url 'admin:index' %}" class="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Admin</a>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="flex items-center space-x-4">
+                    {% if user.is_authenticated %}
+                        <span class="text-white text-sm">
+                            Olá, <strong class="text-red-400">{{ user.username }}</strong>!
+                        </span>
+                        <form method="post" action="{% url 'logout' %}" class="inline-block">
+                            {% csrf_token %}
+                            <button type="submit" class="text-gray-300 bg-red-600 hover:bg-red-700 hover:text-white px-3 py-1 rounded-md text-sm font-medium transition duration-150 border-none cursor-pointer">
+                                Sair <i class="fa-solid fa-right-from-bracket ml-1"></i>
+                            </button>
+                        </form>
+                    {% else %}
+                        <a href="{% url 'register' %}" class="text-gray-300 hover:bg-blue-600 hover:text-white px-3 py-1 rounded-md text-sm font-medium transition duration-150">
+                            Cadastre-se <i class="fa-solid fa-user-plus ml-1"></i>
+                        </a>
+                        <a href="{% url 'login' %}" class="text-gray-300 hover:bg-red-600 hover:text-white px-3 py-1 rounded-md text-sm font-medium transition duration-150">
+                            Entrar <i class="fa-solid fa-right-to-bracket ml-1"></i>
+                        </a>
+                    {% endif %}
+                </div>
+                </div>
+        </div>
+    </nav>
+
+    <main class="flex-grow p-4 max-w-7xl mx-auto w-full">
+        {% block header_text %}
+        {% endblock %}
+        
+        {% block content %}
+        {% endblock content %}
+    </main>
+
+    <footer class="bg-gray-800 text-white p-4 mt-auto">
+        <div class="max-w-7xl mx-auto text-center text-sm">
+            &copy; 2025 Locadora de Carros | Projeto Django.
+        </div>
+    </footer>
+
+</body>
+</html>

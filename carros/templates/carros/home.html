@@ -1,31 +1,55 @@
-{% extends "carros/base.html" %}
+{% extends "base.html" %}
 
-{% block title %}Página Inicial - Locadora Super{% endblock %}
-{% block header_text %}Bem-vindo(a) ao Sistema{% endblock %}
+{% block title %}Página Inicial - Locadora{% endblock %}
+
+{% block header_text %}
+    <h1 class="text-4xl font-bold text-gray-800 border-b-4 border-red-500 pb-3 mb-6">
+        Bem-vindo(a) ao Sistema de Gestão
+    </h1>
+{% endblock %}
 
 {% block content %}
-    <h2>Visão Geral do Sistema</h2>
-    <p>Este é o painel principal de gestão da sua locadora de veículos. Utilize os links de navegação acima para acessar as diferentes seções do sistema.</p>
-    
-    <div style="display: flex; justify-content: space-around; margin-top: 40px;">
-        <div style="background-color: #e6f0ff; padding: 20px; border-radius: 5px; text-align: center; width: 30%;">
-            <h3>Frota</h3>
-            <p>Gerencie todos os veículos disponíveis e alugados.</p>
-            <a href="{% url 'carros:lista_carros' %}" class="button">Ver Carros</a>
+    <p class="text-lg text-gray-600 mb-8">
+        Este é o painel principal de gestão da sua locadora de veículos. Utilize os cartões abaixo ou a barra de navegação superior para acessar as diferentes seções do sistema.
+    </p>
+
+    <div class="grid md:grid-cols-3 gap-6 mt-8">
+        
+        <div class="bg-white p-6 rounded-xl shadow-lg hover:shadow-xl transition duration-300 transform hover:scale-[1.01] border border-gray-100">
+            <h3 class="text-2xl font-semibold text-red-600 mb-3 flex items-center">
+                <i class="fa-solid fa-car-side mr-3"></i> Frota
+            </h3>
+            <p class="text-gray-500 mb-4">
+                Gerencie todos os veículos disponíveis, em manutenção e alugados. Adicione novos modelos rapidamente.
+            </p>
+            <a href="{% url 'carros:carro_list' %}" class="button bg-red-500 hover:bg-red-600">
+                Ver Carros <i class="fa-solid fa-arrow-right ml-1"></i>
+            </a>
         </div>
 
-        <div style="background-color: #e6f0ff; padding: 20px; border-radius: 5px; text-align: center; width: 30%;">
-            <h3>Clientes</h3>
-            <p>Visualize e cadastre informações dos seus clientes.</p>
-            <a href="{% url 'carros:lista_clientes' %}" class="button">Ver Clientes</a>
+        <div class="bg-white p-6 rounded-xl shadow-lg hover:shadow-xl transition duration-300 transform hover:scale-[1.01] border border-gray-100">
+            <h3 class="text-2xl font-semibold text-blue-600 mb-3 flex items-center">
+                <i class="fa-solid fa-users mr-3"></i> Clientes
+            </h3>
+            <p class="text-gray-500 mb-4">
+                Visualize e cadastre informações detalhadas dos seus clientes, histórico e contatos.
+            </p>
+            <a href="{% url 'carros:cliente_list' %}" class="button bg-blue-500 hover:bg-blue-600">
+                Ver Clientes <i class="fa-solid fa-arrow-right ml-1"></i>
+            </a>
         </div>
         
-        <div style="background-color: #e6f0ff; padding: 20px; border-radius: 5px; text-align: center; width: 30%;">
-            <h3>Aluguéis</h3>
-            <p>Acompanhe os registros de aluguéis ativos e finalizados.</p>
-            <a href="{% url 'carros:lista_alugueis' %}" class="button">Ver Aluguéis</a>
+        <div class="bg-white p-6 rounded-xl shadow-lg hover:shadow-xl transition duration-300 transform hover:scale-[1.01] border border-gray-100">
+            <h3 class="text-2xl font-semibold text-green-600 mb-3 flex items-center">
+                <i class="fa-solid fa-file-invoice mr-3"></i> Aluguéis
+            </h3>
+            <p class="text-gray-500 mb-4">
+                Monitore o status dos aluguéis ativos, pendentes e finalize contratos.
+            </p>
+            <a href="{% url 'carros:aluguel_list' %}" class="button bg-green-500 hover:bg-green-600">
+                Ver Aluguéis <i class="fa-solid fa-arrow-right ml-1"></i>
+            </a>
         </div>
+        
     </div>
-
-    <p style="margin-top: 40px; text-align: center; font-style: italic;">Lembre-se de adicionar dados de teste no painel de administração (`/admin/`) antes de visualizar as listas.</p>
-{% endblock %}
+{% endblock content %}

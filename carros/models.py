@@ -58,15 +58,12 @@ class Aluguel(models.Model):
         return f"Aluguel do {self.carro.modelo} para {self.cliente.nome}"
     
     def save(self, *args, **kwargs):
-        # Lógica de negócio básica: marcar o carro como indisponível ao salvar um novo aluguel
-        # Uma lógica mais completa deve ser implementada em um serviço/sinal
         if not self.pk and self.carro.disponivel:
             self.carro.disponivel = False
             self.carro.save()
             
         super().save(*args, **kwargs)
 
-# Adiciona os Models ao admin para que possamos cadastrar dados de teste facilmente
 from django.contrib import admin
 admin.site.register(Carro)
 admin.site.register(Cliente)
