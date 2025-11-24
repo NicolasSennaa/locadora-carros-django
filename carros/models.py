@@ -1,70 +1,81 @@
 from django.db import models
+from django.contrib.auth.models import User
+from django.conf import settings 
+from datetime import date, timedelta 
 
-class Carro(models.Model):
-    """Representa um carro disponível para aluguel."""
-    
-    MARCAS = (
-        ('VW', 'Volkswagen'),
-        ('FIAT', 'Fiat'),
-        ('GM', 'General Motors'),
-        ('FORD', 'Ford'),
-        ('TOYOTA', 'Toyota'),
-        ('HYUNDAI', 'Hyundai'),
-    )
-    
-    placa = models.CharField(max_length=8, unique=True, verbose_name="Placa")
-    modelo = models.CharField(max_length=100, verbose_name="Modelo")
-    marca = models.CharField(max_length=50, choices=MARCAS, verbose_name="Marca")
-    ano = models.IntegerField(verbose_name="Ano de Fabricação")
-    disponivel = models.BooleanField(default=True, verbose_name="Disponível para Aluguel")
-    valor_diaria = models.DecimalField(max_digits=6, decimal_places=2, verbose_name="Valor Diária (R$)")
-
-    class Meta:
-        verbose_name = "Carro"
-        verbose_name_plural = "Carros"
-        
-    def __str__(self):
-        return f"{self.marca} {self.modelo} ({self.placa})"
-
+# 1. MODELOS DE PERFIL
 class Cliente(models.Model):
-    """Representa um cliente da locadora."""
-    nome = models.CharField(max_length=200, verbose_name="Nome Completo")
-    cpf = models.CharField(max_length=14, unique=True, verbose_name="CPF") # Deve ser formatado na entrada
-    email = models.EmailField(verbose_name="E-mail")
-    telefone = models.CharField(max_length=20, blank=True, null=True, verbose_name="Telefone")
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='cliente')
+    cpf = models.CharField(max_length=14, unique=True, verbose_name="CPF")
+    cnh = models.CharField(max_length=20, unique=True, verbose_name="CNH")
+    telefone = models.CharField(max_length=15, blank=True, null=True, verbose_name="Telefone")
 
     class Meta:
         verbose_name = "Cliente"
         verbose_name_plural = "Clientes"
 
     def __str__(self):
-        return self.nome
+        return self.user.get_full_name() or self.user.username
 
+# Perfil do Colaborador
+class Colaborador(models.Model):
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='colaborador')
+    matricula = models.CharField(max_length=10, unique=True, verbose_name="Matrícula")
+
+    class Meta:
+        verbose_name = "Colaborador"
+        verbose_name_plural = "Colaboradores"
+        
+    def __str__(self):
+        return self.user.get_full_name() or self.user.username
+
+# 2. MODELO CARRO
+class Carro(models.Model):
+    placa = models.CharField(max_length=10, unique=True, verbose_name="Placa")
+    marca = models.CharField(max_length=50, verbose_name="Marca")
+    modelo = models.CharField(max_length=50, verbose_name="Modelo")
+    ano = models.PositiveIntegerField(verbose_name="Ano")
+    valor_diaria = models.DecimalField(max_digits=8, decimal_places=2, verbose_name="Valor da Diária")
+    disponivel = models.BooleanField(default=True, verbose_name="Disponível para Aluguel")
+
+    class Meta:
+        verbose_name = "Carro"
+        verbose_name_plural = "Carros"
+
+    def __str__(self):
+        return f"{self.marca} {self.modelo} ({self.placa})"
+
+
+# 3. MODELO ALUGUEL 
 class Aluguel(models.Model):
-    """Representa um aluguel de carro realizado."""
-    
-    carro = models.ForeignKey(Carro, on_delete=models.PROTECT, limit_choices_to={'disponivel': True}, verbose_name="Carro Alugado")
-    cliente = models.ForeignKey(Cliente, on_delete=models.PROTECT, verbose_name="Cliente")
-    data_inicio = models.DateField(verbose_name="Data de Início")
-    data_fim = models.DateField(verbose_name="Data Prevista de Devolução")
+    cliente = models.ForeignKey(
+        settings.AUTH_USER_MODEL, 
+        on_delete=models.CASCADE,
+        related_name='alugueis'
+    )
+    carro = models.ForeignKey(Carro, on_delete=models.CASCADE)
+    data_inicio = models.DateField()
+    data_fim = models.DateField() 
     data_devolucao = models.DateField(null=True, blank=True, verbose_name="Data Real de Devolução")
-    valor_total = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True, verbose_name="Valor Total (R$)")
 
+    valor_total = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    
     class Meta:
         verbose_name = "Aluguel"
         verbose_name_plural = "Aluguéis"
-        
+
     def __str__(self):
-        return f"Aluguel do {self.carro.modelo} para {self.cliente.nome}"
+        status = "(Concluído)" if self.data_devolucao else "(Ativo)"
+        return f"Aluguel de {self.carro.modelo} por {self.cliente.username} {status}"
     
     def save(self, *args, **kwargs):
-        if not self.pk and self.carro.disponivel:
-            self.carro.disponivel = False
-            self.carro.save()
-            
-        super().save(*args, **kwargs)
+      
+        data_final = self.data_devolucao if self.data_devolucao else self.data_fim
+        
+        if self.data_inicio and data_final and self.carro_id:
+            delta = data_final - self.data_inicio
+            dias = delta.days
+            dias_calculados = max(1, dias + 1)
+            self.valor_total = dias_calculados * self.carro.valor_diaria
 
-from django.contrib import admin
-admin.site.register(Carro)
-admin.site.register(Cliente)
-admin.site.register(Aluguel)
+        super().save(*args, **kwargs)

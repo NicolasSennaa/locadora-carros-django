@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard do Colaborador{% endblock %}
+{% block header_text %}Dashboard de Gestão{% endblock %}
+
+{% block content %}
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <div class="bg-white p-6 rounded-xl shadow-lg text-center">
+            <h3 class="text-lg font-semibold text-gray-700">Total de Carros</h3>
+            <p class="text-4xl font-bold text-blue-600">{{ total_carros }}</p>
+        </div>
+        <div class="bg-white p-6 rounded-xl shadow-lg text-center">
+            <h3 class="text-lg font-semibold text-gray-700">Total de Clientes</h3>
+            <p class="text-4xl font-bold text-green-600">{{ total_clientes }}</p>
+        </div>
+        <div class="bg-white p-6 rounded-xl shadow-lg text-center">
+            <h3 class="text-lg font-semibold text-gray-700">Aluguéis Ativos</h3>
+            <p class="text-4xl font-bold text-red-600">{{ alugueis_ativos }}</p>
+        </div>
+    </div>
+
+    <h2 class="text-2xl font-semibold mb-4">Acesso Rápido</h2>
+    <div class="flex space-x-4">
+        <a href="{% url 'carros:carro_list' %}" class="button" style="background-color: #1a73e8;">Gerenciar Frota</a>
+        <a href="{% url 'carros:cliente_list' %}" class="button" style="background-color: #1e8e3e;">Ver Clientes</a>
+        <a href="{% url 'carros:aluguel_list' %}" class="button" style="background-color: #c93756;">Ver Aluguéis</a>
+    </div>
+    
+{% endblock %}

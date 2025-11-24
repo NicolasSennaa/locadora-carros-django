@@ -2,7 +2,7 @@
 """Django's command-line utility for administrative tasks."""
 import os
 import sys
-
+import atexit
 
 def main():
     """Run administrative tasks."""
@@ -15,6 +15,16 @@ def main():
             "available on your PYTHONPATH environment variable? Did you "
             "forget to activate a virtual environment?"
         ) from exc
+    
+    try:
+        from carros.utils.logout_all import logout_all_sessions
+    except ImportError:
+        def logout_all_sessions():
+            pass 
+    
+    if len(sys.argv) > 1 and sys.argv[1] == 'runserver':
+        atexit.register(logout_all_sessions)
+
     execute_from_command_line(sys.argv)
 
 

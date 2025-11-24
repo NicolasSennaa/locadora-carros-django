@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block title %}Aluguel Confirmado{% endblock %}
+
+{% block content %}
+<div class="max-w-xl mx-auto mt-20 bg-green-50 border-t-4 border-green-500 rounded-b text-green-900 px-4 py-8 shadow-xl">
+    <div class="flex items-center">
+        <i class="fa-solid fa-circle-check text-4xl mr-4"></i>
+        <h1 class="text-3xl font-bold">{{ message }}</h1>
+    </div>
+    <p class="mt-4 text-lg">
+        Seu aluguel foi registrado com sucesso. Você pode ver todos os detalhes na sua área de cliente.
+    </p>
+    
+    <div class="mt-6">
+        <a href="{% url 'home' %}" class="text-red-600 font-semibold hover:text-red-800 transition duration-150">
+            <i class="fa-solid fa-house mr-1"></i> Ir para o Dashboard
+        </a>
+    </div>
+</div>
+{% endblock %}

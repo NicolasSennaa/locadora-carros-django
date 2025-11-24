@@ -1,58 +1,178 @@
-{% extends "carros/base.html" %}
+{% extends "base.html" %}
 
-{% block title %}Detalhes do Carro: {{ carro.modelo }}{% endblock %}
-{% block header_text %}Detalhes do Carro{% endblock %}
+{% load static %}
+{% load widget_tweaks %}  {% block title %}Detalhes do Carro: {{ carro.marca }} {{ carro.modelo }}{% endblock %}
 
 {% block content %}
-    <h2>{{ carro.marca }} {{ carro.modelo }}</h2>
-    
-    <div style="border: 1px solid #ccc; padding: 20px; border-radius: 5px;">
-        <p><strong>Placa:</strong> {{ carro.placa }}</p>
-        <p><strong>Ano:</strong> {{ carro.ano }}</p>
-        <p><strong>Valor da Diária:</strong> R$ {{ carro.valor_diaria|floatformat:2 }}</p>
-        <p>
-            <strong>Disponibilidade:</strong> 
+<div class="max-w-4xl mx-auto mt-10 bg-white shadow-xl rounded-xl p-8 border border-gray-200">
+    <div class="flex flex-col md:flex-row gap-8">
+        <div class="md:w-1/2">
+            <div class="h-64 bg-gray-100 flex items-center justify-center rounded-lg border-2 border-dashed border-gray-300">
+                <i class="fa-solid fa-car-side text-7xl text-gray-400"></i>
+            </div>
+            <p class="text-center text-sm text-gray-500 mt-2">Imagem Ilustrativa</p>
+        </div>
+
+        <div class="md:w-1/2">
+            <h1 class="text-4xl font-extrabold text-gray-800 mb-2">{{ carro.marca }} {{ carro.modelo }}</h1>
+            <p class="text-2xl text-red-600 font-semibold mb-4">Ano: {{ carro.ano }}</p>
+            
+            <div class="bg-gray-50 p-3 rounded-md mb-4">
+                <p class="text-xl font-bold text-gray-800">
+                    Diária: R$ 
+                    <span id="valor-diaria" class="text-red-600">{{ carro.valor_diaria|default:"0.00" }}</span>
+                </p>
+            </div>
+            
+            <div class="border-t border-gray-200 pt-4">
+                <p class="text-lg text-gray-600 mb-2"><i class="fa-solid fa-gauge-high mr-2 text-red-500"></i> Quilometragem: 50.000 km</p>
+                <p class="text-lg text-gray-600 mb-2"><i class="fa-solid fa-gas-pump mr-2 text-red-500"></i> Combustível: Gasolina</p>
+                <p class="text-lg text-gray-600 mb-4"><i class="fa-solid fa-user-group mr-2 text-red-500"></i> Ocupantes: 5 Pessoas</p>
+            </div>
+            
             {% if carro.disponivel %}
-                <span style="color: green; font-weight: bold;">DISPONÍVEL</span>
+                <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-6 rounded-md">
+                    <p class="font-bold">Disponível para Aluguel!</p>
+                </div>
+
+                {% if user.is_authenticated %}
+                    <h2 class="text-2xl font-bold mt-6 mb-4 text-gray-800">Período de Aluguel</h2>
+                    
+                    <form method="post" action="{% url 'carros:alugar_carro' pk=carro.pk %}" class="space-y-4">
+                        {% csrf_token %}
+                        <div class="flex flex-col space-y-2">
+                            <label for="{{ form.data_inicio.id_for_label }}" class="font-medium text-gray-700">Data de Início:</label>
+                            {{ form.data_inicio|attr:"class:p-2 border border-gray-300 rounded-md" }}
+                            {% if form.data_inicio.errors %}
+                                <p class="text-red-500 text-sm italic">{{ form.data_inicio.errors.0 }}</p>
+                            {% endif %}
+                        </div>
+
+                        <div class="flex flex-col space-y-2">
+                            <label for="{{ form.data_fim.id_for_label }}" class="font-medium text-gray-700">Data de Fim:</label>
+                            {{ form.data_fim|attr:"class:p-2 border border-gray-300 rounded-md" }}
+                            {% if form.data_fim.errors %}
+                                <p class="text-red-500 text-sm italic">{{ form.data_fim.errors.0 }}</p>
+                            {% endif %}
+                        </div>
+
+                        <div class="mt-6 p-4 bg-yellow-50 border-l-4 border-yellow-500 text-yellow-700 rounded-md">
+                            <p class="text-lg font-semibold">Valor Total Estimado: R$ 
+                                <span id="valor-total-estimado" class="font-extrabold text-2xl">0,00</span>
+                            </p>
+                            <p class="text-sm text-gray-600 mt-1">O cálculo inclui o dia de início e usa o valor da diária acima.</p>
+                        </div>
+                        {% if form.non_field_errors %}
+                            <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 rounded-md">
+                                {% for error in form.non_field_errors %}
+                                    <p>{{ error }}</p>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+
+                        <button type="submit" 
+                                class="w-full py-3 mt-4 bg-red-600 text-white font-semibold rounded-lg shadow-md hover:bg-red-700 transition duration-300 transform hover:scale-[1.01]">
+                            <i class="fa-solid fa-car-alt mr-2"></i> Confirmar Aluguel
+                        </button>
+                    </form>
+                
+                {% else %}
+                    <div class="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 mb-6 rounded-md">
+                        <p class="font-bold">Atenção!</p>
+                        <p>Você precisa <a href="{% url 'login' %}" class="font-semibold underline hover:text-yellow-900">fazer login</a> para alugar este carro.</p>
+                    </div>
+                {% endif %}
+            
             {% else %}
-                <span style="color: red;">ALUGADO</span>
+                <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-6 rounded-md">
+                    <p class="font-bold">Indisponível</p>
+                    <p>Este carro não está disponível para aluguel no momento.</p>
+                </div>
             {% endif %}
-        </p>
+        </div>
     </div>
-
-    <h3 style="margin-top: 30px;">Últimos Aluguéis</h3>
     
-    {% if ultimos_alugueis %}
-    <table>
-        <thead>
-            <tr>
-                <th>Cliente</th>
-                <th>Início</th>
-                <th>Fim Previsto</th>
-                <th>Devolução Real</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for aluguel in ultimos_alugueis %}
-            <tr>
-                <td>{{ aluguel.cliente.nome }}</td>
-                <td>{{ aluguel.data_inicio|date:"d/m/Y" }}</td>
-                <td>{{ aluguel.data_fim|date:"d/m/Y" }}</td>
-                <td>
-                    {% if aluguel.data_devolucao %}
-                        {{ aluguel.data_devolucao|date:"d/m/Y" }}
-                    {% else %}
-                        Em Aberto
-                    {% endif %}
-                </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-    {% else %}
-        <p>Este carro ainda não possui registros de aluguel.</p>
-    {% endif %}
+    <div class="mt-10 text-center">
+        <a href="{% url 'home' %}" class="text-gray-500 hover:text-gray-800 transition duration-150">
+            <i class="fa-solid fa-arrow-left mr-1"></i> Voltar à Home
+        </a>
+    </div>
+</div>
 
-    <a href="{% url 'carros:lista_carros' %}" class="button" style="background-color: #6c757d;">Voltar para Carros</a>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const dataInicioInput = document.getElementById('id_data_inicio');
+        const dataFimInput = document.getElementById('id_data_fim');
+        const valorDiariaElement = document.getElementById('valor-diaria');
+        const valorTotalElement = document.getElementById('valor-total-estimado');
 
+        // Verifica se todos os elementos necessários estão presentes
+        if (!dataInicioInput || !dataFimInput || !valorDiariaElement || !valorTotalElement) {
+            console.error("Elementos de data ou preço não encontrados no DOM.");
+            return;
+        }
+
+        // 1. Extrai o valor da diária do DOM (troca vírgula por ponto para parseFloat)
+        const valorDiariaStr = valorDiariaElement.textContent.replace(',', '.');
+        const valorDiaria = parseFloat(valorDiariaStr) || 0;
+
+        /**
+         * Calcula a diferença de dias entre duas datas, contando o dia de início (inclusivo).
+         * @param {Date} start - Data de início.
+         * @param {Date} end - Data de fim.
+         * @returns {number} Número de dias (mínimo 1).
+         */
+        function calcularDias(start, end) {
+            const oneDay = 24 * 60 * 60 * 1000; // Milissegundos em um dia
+            
+            // Cria cópias das datas e zera o tempo para calcular apenas a diferença de dias
+            const startDate = new Date(start.getFullYear(), start.getMonth(), start.getDate());
+            const endDate = new Date(end.getFullYear(), end.getMonth(), end.getDate());
+
+            // A diferença em milissegundos
+            const diffMs = endDate.getTime() - startDate.getTime();
+            
+            // Converte para dias e adiciona 1 para incluir o dia de início
+            const dias = Math.round(diffMs / oneDay) + 1;
+            
+            // Garante que o mínimo é 1 dia (mesmo se a data for igual)
+            return Math.max(1, dias);
+        }
+
+        /**
+         * Atualiza o valor total estimado na tela.
+         */
+        function atualizarValorTotal() {
+            const dataInicioValue = dataInicioInput.value;
+            const dataFimValue = dataFimInput.value;
+
+            if (dataInicioValue && dataFimValue) {
+                const dataInicio = new Date(dataInicioValue);
+                const dataFim = new Date(dataFimValue);
+
+                // As datas devem ser válidas e a data de fim não pode ser anterior à data de início.
+                if (dataFim >= dataInicio) {
+                    const numDias = calcularDias(dataInicio, dataFim);
+                    const valorTotal = numDias * valorDiaria;
+                    
+                    // Exibe o valor formatado com vírgula como separador decimal
+                    valorTotalElement.textContent = valorTotal.toFixed(2).replace('.', ',');
+                } else {
+                    // Se a data de fim for inválida/anterior, exibe 0,00
+                    valorTotalElement.textContent = '0,00';
+                }
+            } else {
+                // Se faltar uma das datas, exibe 0,00
+                valorTotalElement.textContent = '0,00';
+            }
+        }
+
+        // Adiciona listeners para os campos de data para atualizar o valor
+        dataInicioInput.addEventListener('change', atualizarValorTotal);
+        dataFimInput.addEventListener('change', atualizarValorTotal);
+
+        // Atualiza o valor total na carga da página, caso já existam valores
+        atualizarValorTotal();
+    });
+</script>
 {% endblock %}

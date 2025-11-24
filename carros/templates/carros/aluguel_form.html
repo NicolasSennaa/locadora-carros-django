@@ -1,0 +1,23 @@
+{% extends "carros/base.html" %}
+
+{% block title %}Confirmar Aluguel{% endblock %}
+{% block header_text %}Confirmar Aluguel{% endblock %}
+
+{% block content %}
+<div class="max-w-lg mx-auto bg-white p-8 rounded-xl shadow-xl">
+    
+    <h2 class="text-2xl font-bold mb-4">Você está alugando: {{ view.get_form_kwargs.carro.modelo }}</h2>
+    
+    <form method="post">
+        {% csrf_token %}
+        
+        <div class="space-y-4">
+            {{ form.as_p }}
+        </div>
+        
+        <button type_submit" class="button w-full justify-center mt-6" style="background-color: #1a73e8;">
+            Confirmar Aluguel
+        </button>
+    </form>
+</div>
+{% endblock %}

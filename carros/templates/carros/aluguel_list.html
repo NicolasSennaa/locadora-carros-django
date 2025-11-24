@@ -4,7 +4,6 @@
 {% block header_text %}Histórico de Aluguéis{% endblock %}
 
 {% block content %}
-    <h2>Lista de Aluguéis</h2>
     
     {% if alugueis %}
     <table>
@@ -23,8 +22,14 @@
             {% for aluguel in alugueis %}
             <tr>
                 <td>{{ aluguel.id }}</td>
-                <td><a href="{% url 'carros:detalhe_carro' pk=aluguel.carro.pk %}">{{ aluguel.carro }}</a></td>
-                <td>{{ aluguel.cliente.nome }}</td>
+                <td><a href="{% url 'carros:carro_detail' pk=aluguel.carro.pk %}">{{ aluguel.carro }}</a></td>
+                <td>
+                    {% if aluguel.cliente.first_name %}
+                        {{ aluguel.cliente.first_name }} {{ aluguel.cliente.last_name }}
+                    {% else %}
+                        {{ aluguel.cliente.username }} (Usuário sem nome)
+                    {% endif %}
+                </td>
                 <td>{{ aluguel.data_inicio|date:"d/m/Y" }}</td>
                 <td>{{ aluguel.data_fim|date:"d/m/Y" }}</td>
                 <td>

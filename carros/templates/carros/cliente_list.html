@@ -4,7 +4,6 @@
 {% block header_text %}Clientes Cadastrados{% endblock %}
 
 {% block content %}
-    <h2>Lista de Clientes</h2>
     
     {% if clientes %}
     <table>
@@ -19,9 +18,18 @@
         <tbody>
             {% for cliente in clientes %}
             <tr>
-                <td>{{ cliente.nome }}</td>
+                <td>
+                    {% if cliente.user.first_name %}
+                        {{ cliente.user.first_name }} {{ cliente.user.last_name }}
+                    {% else %}
+                        {{ cliente.user.username }} (Nome não preenchido)
+                    {% endif %}
+                </td>
+                
                 <td>{{ cliente.cpf }}</td>
-                <td>{{ cliente.email }}</td>
+                
+                <td>{{ cliente.user.email }}</td>
+                
                 <td>{{ cliente.telefone|default:"N/A" }}</td>
             </tr>
             {% endfor %}

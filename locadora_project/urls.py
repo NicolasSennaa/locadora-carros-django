@@ -17,12 +17,16 @@ Including another URLconf
 
 from django.contrib import admin
 from django.urls import path, include
-from carros.views import HomeView, RegisterView 
+from django.contrib.auth import views as auth_views
+
+from carros.views import home_dispatch_view, ClienteRegisterView 
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', HomeView.as_view(), name='home'),
-    path('carros/', include('carros.urls')),
-    path('accounts/register/', RegisterView.as_view(), name='register'),
-    path('accounts/', include('django.contrib.auth.urls')),
+    path('', home_dispatch_view, name='home'), 
+    path('auth/', include('django.contrib.auth.urls')), 
+    path('auth/login/', auth_views.LoginView.as_view(template_name='registration/login.html'), name='login'),
+    path('auth/logout/', auth_views.LogoutView.as_view(next_page='/'), name='logout'),
+    path('auth/register/', ClienteRegisterView.as_view(), name='register'),
+    path('carros/', include('carros.urls', namespace='carros')),
 ]

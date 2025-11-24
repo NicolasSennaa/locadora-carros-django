@@ -1,48 +1,70 @@
 {% extends "base.html" %}
 
 {% block title %}Lista de Carros{% endblock %}
+
 {% block header_text %}Frota de Veículos{% endblock %}
 
 {% block content %}
-    <h2>Lista de Carros</h2>
-    
-    {% if carros %}
-    <table>
-        <thead>
-            <tr>
-                <th>Placa</th>
-                <th>Marca</th>
-                <th>Modelo</th>
-                <th>Ano</th>
-                <th>Diária (R$)</th>
-                <th>Status</th>
-                <th>Ações</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for carro in carros %}
-            <tr>
-                <td>{{ carro.placa }}</td>
-                <td>{{ carro.marca }}</td>
-                <td>{{ carro.modelo }}</td>
-                <td>{{ carro.ano }}</td>
-                <td>R$ {{ carro.valor_diaria|floatformat:2 }}</td>
-                <td>
-                    {% if carro.disponivel %}
-                        <span style="color: green; font-weight: bold;">DISPONÍVEL</span>
-                    {% else %}
-                        <span style="color: red;">ALUGADO</span>
-                    {% endif %}
-                </td>
-                <td>
-                    <a href="{% url 'carros:detalhe_carro' pk=carro.pk %}" class="button" style="background-color: #1a73e8;">Ver Detalhes</a>
-                </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-    {% else %}
-        <p>Nenhum carro cadastrado. Adicione carros no painel de administração.</p>
-    {% endif %}
+    <div class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
 
+        <div class="mb-4">
+            <a href="{% url 'admin:carros_carro_add' %}" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition duration-150">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
+                </svg>
+                Adicionar Novo Carro
+            </a>
+        </div>
+
+        {% if carros %}
+        <div class="shadow overflow-hidden border-b border-gray-200 sm:rounded-lg">
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Placa</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Marca</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Modelo</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Ano</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Valor Diária</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Ações</th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200">
+                {% for carro in carros %}
+                <tr class="hover:bg-gray-50">
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ carro.placa }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ carro.marca }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ carro.modelo }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ carro.ano }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">R$ {{ carro.valor_diaria|floatformat:2 }}</td>
+                    
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        {% if carro.disponivel %}
+                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                                DISPONÍVEL
+                            </span>
+                        {% else %}
+                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">
+                                ALUGADO
+                            </span>
+                        {% endif %}
+                    </td>
+                    
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                        <a href="{% url 'admin:carros_carro_change' carro.pk %}" class="inline-flex items-center px-3 py-1 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-150">
+                            Editar (Admin)
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+            </table>
+        </div>
+        {% else %}
+            <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded-md">
+                <p class="text-sm text-yellow-700">Nenhum carro cadastrado. Adicione veículos através do painel de administração.</p>
+            </div>
+        {% endif %}
+    </div>
 {% endblock %}

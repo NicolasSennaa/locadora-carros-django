@@ -11,25 +11,44 @@
             font-family: 'Inter', sans-serif;
             background-color: #f4f7f9;
         }
-        .field-wrapper input {
-            width: 100%;
-            padding: 8px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-        }
-        .button {
-            display: inline-block;
-            padding: 8px 15px;
-            margin-top: 10px;
-            border-radius: 5px;
-            color: white !important;
-            text-decoration: none;
+        label {
+            display: block;
+            margin-bottom: 0.25rem;
             font-weight: 600;
-            transition: background-color 0.15s ease;
-            background-color: #3b82f6; 
+            color: #374151; 
+        }
+        input[type="text"],
+        input[type="email"],
+        input[type="password"],
+        input[type="number"],
+        input[type="date"],
+        textarea {
+            width: 100%;
+            padding: 0.5rem 0.75rem;
+            border: 1px solid #D1D5DB; 
+            border-radius: 0.375rem; 
+            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+        }
+        input[type="date"] { 
+            line-height: 1.5; 
+        }
+        
+        .button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.6rem 1.2rem;
+            border-radius: 0.375rem;
+            font-weight: 600;
+            color: white !important; 
+            text-decoration: none;
+            transition: all 0.2s ease-in-out;
+            border: none;
+            cursor: pointer;
         }
         .button:hover {
-            background-color: #2563eb;
+            opacity: 0.9;
+            transform: translateY(-1px);
         }
 
         table {
@@ -60,62 +79,70 @@
     <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
 </head>
 <body class="min-h-screen flex flex-col">
-
     <nav class="bg-gray-800 shadow-xl">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex items-center justify-between h-16">
                 <div class="flex items-center">
                     <a href="{% url 'home' %}" class="flex-shrink-0 text-white text-xl font-bold">
-                        <i class="fa-solid fa-car-side text-red-500 mr-2"></i> Locadora
+                        <i class="fa-solid fa-car-side text-red-500 mr-2"></i> Aluga Aí
                     </a>
                     <div class="hidden md:block">
                         <div class="ml-10 flex items-baseline space-x-4">
-                            <a href="{% url 'home' %}" class="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Início</a>
-                            <a href="{% url 'carros:carro_list' %}" class="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Carros</a>
-                            <a href="{% url 'carros:cliente_list' %}" class="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Clientes</a>
-                            <a href="{% url 'carros:aluguel_list' %}" class="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Aluguéis</a>
-                            <a href="{% url 'admin:index' %}" class="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Admin</a>
+                            {% if user.is_authenticated %}
+                                {% if user.is_superuser or user.colaborador %}
+                                    
+                                    <a href="{% url 'carros:home_colaborador' %}" class="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Dashboard</a>
+                                    <a href="{% url 'carros:carro_list' %}" class="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Frota</a>
+                                    <a href="{% url 'carros:cliente_list' %}" class="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Clientes</a>
+                                    <a href="{% url 'carros:aluguel_list' %}" class="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Aluguéis</a>
+                                    {% if user.is_superuser %}
+                                        <a href="{% url 'admin:index' %}" class="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Admin</a>
+                                    {% endif %}
+                                {% elif user.cliente %}
+                        
+                                    <a href="{% url 'carros:home_cliente' %}" class="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Alugar</a>
+        
+                                {% endif %} 
+                            {% endif %}
                         </div>
                     </div>
                 </div>
-                
                 <div class="flex items-center space-x-4">
                     {% if user.is_authenticated %}
                         <span class="text-white text-sm">
-                            Olá, <strong class="text-red-400">{{ user.username }}</strong>!
+                            Olá, <strong class="text-red-400">{{ user.first_name|default:user.username }}</strong>!
                         </span>
-                        <form method="post" action="{% url 'logout' %}" class="inline-block">
+                        <form method="post" action="{% url 'logout' %}" class="inline-block m-0">
                             {% csrf_token %}
-                            <button type="submit" class="text-gray-300 bg-red-600 hover:bg-red-700 hover:text-white px-3 py-1 rounded-md text-sm font-medium transition duration-150 border-none cursor-pointer">
+                            <button type="submit" class="button text-sm" style="background-color: #c93756; padding: 0.4rem 0.8rem;">
                                 Sair <i class="fa-solid fa-right-from-bracket ml-1"></i>
                             </button>
                         </form>
                     {% else %}
-                        <a href="{% url 'register' %}" class="text-gray-300 hover:bg-blue-600 hover:text-white px-3 py-1 rounded-md text-sm font-medium transition duration-150">
+                        <a href="{% url 'register' %}" class="button text-sm" style="background-color: #1a73e8; padding: 0.4rem 0.8rem;">
                             Cadastre-se <i class="fa-solid fa-user-plus ml-1"></i>
                         </a>
-                        <a href="{% url 'login' %}" class="text-gray-300 hover:bg-red-600 hover:text-white px-3 py-1 rounded-md text-sm font-medium transition duration-150">
+                        <a href="{% url 'login' %}" class="button text-sm" style="background-color: #1e8e3e; padding: 0.4rem 0.8rem;">
                             Entrar <i class="fa-solid fa-right-to-bracket ml-1"></i>
                         </a>
                     {% endif %}
                 </div>
-                </div>
+            </div>
         </div>
     </nav>
-
-    <main class="flex-grow p-4 max-w-7xl mx-auto w-full">
-        {% block header_text %}
-        {% endblock %}
-        
-        {% block content %}
-        {% endblock content %}
+    <main class="flex-grow p-4 md:p-8">
+        <div class="max-w-7xl mx-auto">
+            <h1 class="text-3xl font-bold text-gray-800 mb-6">
+                {% block header_text %}{% endblock %}
+            </h1>
+            {% block content %}
+            {% endblock content %}
+        </div>
     </main>
-
     <footer class="bg-gray-800 text-white p-4 mt-auto">
         <div class="max-w-7xl mx-auto text-center text-sm">
             &copy; 2025 Locadora de Carros | Projeto Django.
         </div>
     </footer>
-
 </body>
 </html>
